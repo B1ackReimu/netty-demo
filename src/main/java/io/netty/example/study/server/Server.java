@@ -15,6 +15,7 @@ import io.netty.example.study.server.codec.OrderProtocolEncoder;
 import io.netty.example.study.server.codec.handler.OrderServerProcessHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 import java.util.concurrent.ExecutionException;
 
@@ -24,9 +25,11 @@ public class Server {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.channel(NioServerSocketChannel.class);
         serverBootstrap.handler(new LoggingHandler(LogLevel.INFO));
-        serverBootstrap.group(new NioEventLoopGroup());
-        serverBootstrap.childOption(ChannelOption.TCP_NODELAY,true);
-        serverBootstrap.option(ChannelOption.SO_BACKLOG,1024);
+        NioEventLoopGroup boss = new NioEventLoopGroup(0, new DefaultThreadFactory("boss"));
+        NioEventLoopGroup worker = new NioEventLoopGroup(0, new DefaultThreadFactory("worker"));
+        serverBootstrap.group(boss, worker);
+        serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+        serverBootstrap.option(ChannelOption.SO_BACKLOG, 1024);
         serverBootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
             @Override
             protected void initChannel(NioSocketChannel ch) throws Exception {
