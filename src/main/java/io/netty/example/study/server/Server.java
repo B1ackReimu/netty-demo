@@ -34,7 +34,7 @@ public class Server {
             @Override
             protected void initChannel(NioSocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new OrderFrameDecoder());
+                pipeline.addLast("frameDecoder", new OrderFrameDecoder());
                 pipeline.addLast(new OrderFrameEncoder());
                 pipeline.addLast(new OrderProtocolEncoder());
                 pipeline.addLast(new OrderProtocolDecoder());
